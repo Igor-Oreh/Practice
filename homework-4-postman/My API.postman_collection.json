@@ -1,0 +1,593 @@
+{
+	"info": {
+		"_postman_id": "64821b81-d4dd-424b-ba89-0f5c4bbff833",
+		"name": "My API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "50372056",
+		"_collection_link": "https://goossess-7562050.postman.co/workspace/Igor-Oreh's-Workspace~9cad4016-35e8-499c-874b-a9e34a979449/collection/50372056-64821b81-d4dd-424b-ba89-0f5c4bbff833?action=share&source=collection_link&creator=50372056"
+	},
+	"item": [
+		{
+			"name": "Movies",
+			"item": [
+				{
+					"name": "GET Movies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has movies array\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.be.an('array');\r",
+									"});\r",
+									"pm.test(\"Limit works\", function() {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.length).to.be.at.most(10); \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Movie has some fields\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.length > 0) {\r",
+									"        const movie = response[0];\r",
+									"        pm.expect(movie).to.have.property('title');\r",
+									"        pm.expect(movie).to.have.property('duration');\r",
+									"        pm.expect(movie).to.have.property('genre');\r",
+									"        pm.expect(movie).to.have.property('ageRating');\r",
+									"        \r",
+									"        pm.expect(movie).to.have.property('id');\r",
+									"        pm.expect(movie).to.have.property('description');\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/v1/movies?filter=action&start=0&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"movies"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "action"
+								},
+								{
+									"key": "start",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Получение списка всех доступных фильмов(параметры: filter - фильтрация, start - начальная позиция, limit - количество, max 50)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Rating",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 201\", () => pm.response.to.have.status(201));\r",
+									"pm.test(\"Rating has all required fields\", function() {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('movieId');\r",
+									"    pm.expect(response).to.have.property('userId'); \r",
+									"    pm.expect(response).to.have.property('rating');\r",
+									"    pm.expect(response.rating).to.be.within(1, 10);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userKey\": \"{{authToken}}\",\r\n    \"rating\": 8,\r\n    \"comment\": \"Достойное продолжение, оправдавшее надежды 8 из 10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/v1/movies/1/rating",
+						"description": "Добавление оценки фильму пользователем (от 1 до 10, с возможностью комментария(обязательные: userKey - авторизация, rating - оценка 1-10; опциональные:  \ncomment - комментарий до 500 символов))"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sessions",
+			"item": [
+				{
+					"name": "GET Sessions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has sessions array\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Session has required fields\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.length > 0) {\r",
+									"        const session = response[0];\r",
+									"        pm.expect(session).to.have.property('id');\r",
+									"        pm.expect(session).to.have.property('movieId');\r",
+									"        pm.expect(session).to.have.property('startTime');\r",
+									"        pm.expect(session).to.have.property('hall');\r",
+									"        pm.expect(session).to.have.property('basePrice');\r",
+									"        pm.expect(session).to.have.property('format');\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/v1/sessions?date=2024-01-15&movieId=1&start=0&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"sessions"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2024-01-15"
+								},
+								{
+									"key": "movieId",
+									"value": "1"
+								},
+								{
+									"key": "start",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Получение расписания сеансов(параметры: date - дата, movieId - ID фильма, filter - фильтр, start - начальная позиция, limit - количество, max 100)"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Session Seats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has seats structure\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('session');\r",
+									"    pm.expect(response).to.have.property('seats');\r",
+									"    pm.expect(response).to.have.property('isAvailable');\r",
+									"    pm.expect(response).to.have.property('seatPricing');\r",
+									"    \r",
+									"    pm.expect(response.seats).to.be.an('array');\r",
+									"    pm.expect(response.isAvailable).to.be.an('array');\r",
+									"    pm.expect(response.seatPricing).to.be.an('array');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/v1/sessions/1/seats",
+						"description": "Получение информации о местах в зале по сеансу(параметры: sessionId - ID сеанса в path)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tickets",
+			"item": [
+				{
+					"name": "POST Buy Ticket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ticket created successfully\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('id');\r",
+									"    pm.expect(response).to.have.property('sessionId');\r",
+									"    pm.expect(response).to.have.property('seatNumber');\r",
+									"    pm.expect(response.status).to.equal('ACTIVE');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userKey\": \"{{authToken}}\",\r\n    \"sessionId\": 1,\r\n    \"seatNumber\": \"A42\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/v1/tickets",
+						"description": "Покупка билета(обязательные: userKey - авторизация, sessionId - ID сеанса, seatNumber  \n\\- номер места в формате Б42)\""
+					},
+					"response": []
+				},
+				{
+					"name": "GET Ticket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ticket has all required fields\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('id');\r",
+									"    pm.expect(response).to.have.property('sessionId');\r",
+									"    pm.expect(response).to.have.property('userId');\r",
+									"    pm.expect(response).to.have.property('seatNumber');\r",
+									"    pm.expect(response).to.have.property('status');\r",
+									"    pm.expect(response).to.have.property('price');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Seat number format is correct\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.seatNumber).to.match(/^[A-Z][0-9]+$/);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/v1/tickets/1?userKey={{authToken}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"tickets",
+								"1"
+							],
+							"query": [
+								{
+									"key": "userKey",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"description": "Получение информации о билете по его Id (параметры: ticketId - ID билета в path, userKey -  \nавторизация в query)"
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH Cancel Ticket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ticket status is CANCELLED\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('id');\r",
+									"    pm.expect(response.status).to.equal('CANCELLED');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"CANCELLED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/v1/tickets/1",
+						"description": "Отмена билета"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "POST Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User created with all required fields\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.property('id');\r",
+									"    pm.expect(response).to.have.property('email');\r",
+									"    pm.expect(response).to.have.property('firstName');\r",
+									"    pm.expect(response).to.have.property('lastName');\r",
+									"    pm.expect(response).to.have.property('phoneNumber');\r",
+									"    pm.expect(response).to.not.have.property('password'); // Пароль не должен возвращаться\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"password123\",\r\n    \"firstName\": \"Иван\",\r\n    \"lastName\": \"Иванов\",\r\n    \"phoneNumber\": \"+375291234567\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/v1/users/register",
+						"description": "Регистрация нового пользователя (обязательные: email, password,  \nfirstName, lastName, phoneNumber)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Returns userKey string\", function () {\r",
+									"    const response = pm.response.text();\r",
+									"    pm.expect(response).to.be.a('string');\r",
+									"    pm.expect(response.length).to.be.greaterThan(0);\r",
+									"    \r",
+									"    pm.collectionVariables.set(\"authToken\", response);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/v1/users/login",
+						"description": "Аутентификация пользователя (обязательные: email, password; возвращает:  \nuserKey)"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Logout User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Logout successful\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include('Успешный выход из системы');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/v1/users/logout",
+						"description": "Выход пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "GET User Tickets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has tickets array\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tickets have correct structure\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.length > 0) {\r",
+									"        const ticket = response[0];\r",
+									"        pm.expect(ticket).to.have.property('id');\r",
+									"        pm.expect(ticket).to.have.property('sessionId');\r",
+									"        pm.expect(ticket).to.have.property('seatNumber');\r",
+									"        pm.expect(ticket).to.have.property('status');\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/v1/users/1/tickets?userKey={{authToken}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"1",
+								"tickets"
+							],
+							"query": [
+								{
+									"key": "userKey",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"description": "Получение списка билетов пользователя(параметры: userId - ID пользователя в path, userKey - авторизация в query, start - начальная позиция, limit - количество, max 50)"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "authToken",
+			"value": ""
+		}
+	]
+}
